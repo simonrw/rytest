@@ -11,8 +11,10 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]
-dependencies = [
-    "pytest",
-]
+dependencies = ["pytest"]
+
+[project.scripts]
+rytest = "rytest:cli_main"
+
 [tool.maturin]
 features = ["pyo3/extension-module"]
