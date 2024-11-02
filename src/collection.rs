@@ -6,19 +6,19 @@ use tree_sitter::Node;
 use crate::TestDefinition;
 
 #[derive(Debug, PartialEq, Eq)]
-enum FixtureScope {
+pub enum FixtureScope {
     Session,
     Function,
 }
 
 #[derive(Debug, PartialEq, Eq)]
-struct Fixture {
+pub struct Fixture {
     name: String,
     scope: FixtureScope,
 }
 
 #[derive(Default, PartialEq, Eq, Debug)]
-struct TestFileContents {
+pub struct TestFileContents {
     tests: Vec<TestDefinition>,
     fixtures: Vec<Fixture>,
 }
@@ -45,6 +45,7 @@ struct Visitor {
 impl Visitor {
     pub async fn new(filename: impl AsRef<Path>) -> eyre::Result<Self> {
         let filename = filename.as_ref();
+        tracing::debug!("visiting file {}", filename.display());
         let bytes = tokio::fs::read(filename).await.wrap_err("reading file")?;
         Ok(Self {
             filename: filename.to_path_buf(),
