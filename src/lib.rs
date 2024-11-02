@@ -1,18 +1,14 @@
-use pyo3::prelude::*;
+mod collection;
 
-/// Formats the sum of two numbers as string.
-#[pyfunction]
-fn cli_main() -> PyResult<()> {
-    Python::with_gil(|py| {
-        let pytest = py.import_bound("pytest")?;
-        pytest.call_method0("console_main")?;
-        Ok(())
-    })
-}
+use std::path::PathBuf;
 
-/// A Python module implemented in Rust.
-#[pymodule]
-fn rytest(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(cli_main, m)?)?;
-    Ok(())
+#[derive(thiserror::Error, Debug)]
+pub enum RytestError {}
+
+pub type RytestResult<T> = std::result::Result<T, RytestError>;
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct TestDefinition {
+    pub path: PathBuf,
+    pub name: String,
 }
