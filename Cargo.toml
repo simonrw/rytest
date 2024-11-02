@@ -7,8 +7,11 @@ edition = "2021"
 
 [dependencies]
 color-eyre = "0.6.3"
+ignore = "0.4.23"
 pyo3 = { version = "0.22.0", features = ["auto-initialize"] }
 tokio = { version = "1.41.0", features = ["full"] }
+tree-sitter = "0.24.3"
+tree-sitter-python = "0.23.2"
 
 [dev-dependencies]
 tempfile = "3.13.0"
