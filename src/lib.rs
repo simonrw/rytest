@@ -7,4 +7,5 @@ pub struct TestDefinition {
     pub path: PathBuf,
     pub class_name: Option<String>,
     pub name: String,
+    pub fixture_names: Vec<String>,
 }
