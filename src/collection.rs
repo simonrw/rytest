@@ -84,7 +84,7 @@ impl Visitor {
                 | "if_statement"
                 | "try_statement"
                 | "assert_statement" => continue,
-                kind => todo!("{kind}"),
+                kind => todo!("Unhandled node kind: {kind}"),
             }
         }
 
@@ -276,9 +276,24 @@ async fn find_test_files(root: impl AsRef<Path>) -> eyre::Result<Vec<PathBuf>> {
     let mut out = Vec::new();
     ignore::Walk::new(root).for_each(|result| {
         if let Ok(entry) = result {
-            if entry.path().is_file() {
-                out.push(entry.path().to_path_buf());
+            if !entry.path().is_file() {
+                return;
             }
+
+            if !entry.path().extension().map_or(false, |ext| ext == "py") {
+                return;
+            }
+
+            if entry
+                .path()
+                .file_name()
+                .unwrap_or_default()
+                .to_str()
+                .map_or(false, |name| name.starts_with("test_"))
+            {
+                return;
+            }
+            out.push(entry.path().to_path_buf());
         }
     });
     Ok(out)
