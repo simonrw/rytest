@@ -7,7 +7,7 @@ use crate::TestDefinition;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum FixtureScope {
-    Session,
+    // Session,
     Function,
 }
 
@@ -199,7 +199,6 @@ impl Visitor {
         node: Node,
         class_name: Option<String>,
     ) -> eyre::Result<()> {
-        let mut cursor = node.walk();
         let Some(identifier_node) = node.child(1) else {
             eyre::bail!("no identifier node found");
         };
