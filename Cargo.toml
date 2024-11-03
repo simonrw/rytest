@@ -13,7 +13,7 @@ crate-type = ["cdylib", "rlib"]
 clap = { version = "4.5.20", features = ["derive"] }
 color-eyre = "0.6.3"
 ignore = "0.4.23"
-pyo3 = { version = "0.22.0", features = ["auto-initialize"] }
+pyo3 = { version = "0.22.0", features = [] }
 tokio = { version = "1.41.0", features = ["full"] }
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["fmt"] }
