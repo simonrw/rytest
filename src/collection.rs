@@ -283,7 +283,7 @@ async fn find_test_files(root: impl AsRef<Path>) -> eyre::Result<Vec<PathBuf>> {
                 return;
             }
 
-            if entry
+            if !entry
                 .path()
                 .file_name()
                 .unwrap_or_default()
