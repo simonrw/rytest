@@ -1,10 +1,17 @@
+use clap::Parser;
 use collection::collect_items;
-use pyo3::{exceptions::PyRuntimeError, prelude::*};
+use pyo3::prelude::*;
 use tokio::runtime;
 
 mod collection;
 
-use std::{env::current_dir, path::PathBuf};
+use std::path::PathBuf;
+
+#[derive(Parser, Debug)]
+struct Args {
+    #[arg(short, long)]
+    path: PathBuf,
+}
 
 #[derive(Default, Debug, PartialEq, Eq)]
 pub struct TestDefinition {
@@ -19,12 +26,14 @@ pub struct TestDefinition {
 fn cli_main() -> PyResult<()> {
     tracing_subscriber::fmt::init();
 
+    // Command line arguments start with the Python interpreter
+    let args = Args::parse_from(std::env::args().skip(1));
+
     let runtime = runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
         .unwrap();
-    let root = current_dir().map_err(|e| PyRuntimeError::new_err(format!("{e}")))?;
-    let items = runtime.block_on(async move { collect_items(root).await.unwrap() });
+    let items = runtime.block_on(async move { collect_items(args.path).await.unwrap() });
     for item in items {
         println!("{item:?}");
     }
