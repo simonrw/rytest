@@ -13,12 +13,52 @@ struct Args {
     path: PathBuf,
 }
 
-#[derive(Default, Debug, PartialEq, Eq)]
+#[derive(Default, PartialEq, Eq)]
 pub struct TestDefinition {
     pub path: PathBuf,
     pub class_name: Option<String>,
     pub name: String,
     pub fixture_names: Vec<String>,
+}
+
+impl std::fmt::Debug for TestDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(class_name) = &self.class_name {
+            if self.fixture_names.is_empty() {
+                write!(
+                    f,
+                    "{path}::{class_name}::{name} (uses no fixtures)",
+                    path = self.path.display(),
+                    class_name = class_name,
+                    name = self.name,
+                )
+            } else {
+                write!(
+                    f,
+                    "{path}::{class_name}::{name} (uses {fixture_names})",
+                    path = self.path.display(),
+                    class_name = class_name,
+                    name = self.name,
+                    fixture_names = self.fixture_names.join(", ")
+                )
+            }
+        } else if self.fixture_names.is_empty() {
+            write!(
+                f,
+                "{path}::{name} (uses no fixtures)",
+                path = self.path.display(),
+                name = self.name,
+            )
+        } else {
+            write!(
+                f,
+                "{path}::{name} (uses {fixture_names})",
+                path = self.path.display(),
+                name = self.name,
+                fixture_names = self.fixture_names.join(", ")
+            )
+        }
+    }
 }
 
 // Entrypoint to the Rust world

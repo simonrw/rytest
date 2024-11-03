@@ -11,16 +11,41 @@ pub enum FixtureScope {
     Function,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+impl std::fmt::Display for FixtureScope {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            FixtureScope::Function => write!(f, "function"),
+        }
+    }
+}
+
+#[derive(PartialEq, Eq)]
 pub struct Fixture {
     name: String,
     scope: FixtureScope,
 }
 
-#[derive(Default, PartialEq, Eq, Debug)]
+impl std::fmt::Debug for Fixture {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{name} ({scope})", name = self.name, scope = self.scope)
+    }
+}
+
+#[derive(Default, PartialEq, Eq)]
 pub struct TestFileContents {
     pub tests: Vec<TestDefinition>,
     pub fixtures: Vec<Fixture>,
+}
+
+impl std::fmt::Debug for TestFileContents {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "tests: {tests:?}, fixtures: {fixtures:?}",
+            tests = self.tests,
+            fixtures = self.fixtures
+        )
+    }
 }
 
 impl TestFileContents {
