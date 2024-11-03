@@ -34,8 +34,12 @@ fn cli_main() -> PyResult<()> {
         .build()
         .unwrap();
     let items = runtime.block_on(async move { collect_items(args.path).await.unwrap() });
-    for item in items {
-        println!("{item:?}");
+    for test in items.tests {
+        println!("test: {test:?}");
+    }
+
+    for fixture in items.fixtures {
+        println!("fixture: {fixture:?}");
     }
     Ok(())
 }

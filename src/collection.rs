@@ -19,19 +19,26 @@ pub struct Fixture {
 
 #[derive(Default, PartialEq, Eq, Debug)]
 pub struct TestFileContents {
-    tests: Vec<TestDefinition>,
-    fixtures: Vec<Fixture>,
+    pub tests: Vec<TestDefinition>,
+    pub fixtures: Vec<Fixture>,
 }
 
-pub async fn collect_items(root: impl AsRef<Path>) -> eyre::Result<Vec<TestFileContents>> {
+impl TestFileContents {
+    pub fn extend(&mut self, other: TestFileContents) {
+        self.tests.extend(other.tests);
+        self.fixtures.extend(other.fixtures);
+    }
+}
+
+pub async fn collect_items(root: impl AsRef<Path>) -> eyre::Result<TestFileContents> {
     let root = root.as_ref();
     let test_files = find_test_files(root).await.wrap_err("finding test files")?;
-    let mut out = Vec::new();
+    let mut out = TestFileContents::default();
     for test_file in test_files {
         let items = extract_items_from_test_file(&test_file)
             .await
             .wrap_err_with(|| format!("extracting tests from {}", test_file.display()))?;
-        out.push(items);
+        out.extend(items);
     }
     Ok(out)
 }
@@ -324,14 +331,14 @@ def test_simple():
             .wrap_err("collecting tests")?;
         assert_eq!(
             tests,
-            vec![TestFileContents {
+            TestFileContents {
                 tests: vec![TestDefinition {
                     name: "test_simple".to_string(),
                     path: test_dir.path().join("test_simple.py"),
                     ..Default::default()
                 }],
                 fixtures: Vec::new(),
-            },]
+            },
         );
         Ok(())
     }
@@ -354,7 +361,7 @@ class TestClass:
             .wrap_err("collecting tests")?;
         assert_eq!(
             tests,
-            vec![TestFileContents {
+            TestFileContents {
                 tests: vec![TestDefinition {
                     name: "test_method".to_string(),
                     path: test_dir.path().join("test_method.py"),
@@ -362,7 +369,7 @@ class TestClass:
                     ..Default::default()
                 }],
                 fixtures: Vec::new(),
-            },]
+            },
         );
         Ok(())
     }
@@ -390,7 +397,7 @@ def test_with_fixture(my_fixture):
             .wrap_err("collecting tests")?;
         assert_eq!(
             items,
-            vec![TestFileContents {
+            TestFileContents {
                 tests: vec![TestDefinition {
                     name: "test_with_fixture".to_string(),
                     path: test_dir.path().join("test_with_fixture.py"),
@@ -401,7 +408,7 @@ def test_with_fixture(my_fixture):
                     name: "my_fixture".to_string(),
                     scope: FixtureScope::Function
                 }],
-            },]
+            },
         );
         Ok(())
     }
