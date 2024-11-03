@@ -5,6 +5,7 @@ mkShell rec {
     rustup
     clang
     maturin
+    bacon
   ] ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
     libiconv
   ]) ++ lib.optionals stdenv.isLinux [
