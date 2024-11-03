@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use color_eyre::eyre::{self, Context};
+use tokio::task::JoinSet;
 use tree_sitter::Node;
 
 use crate::TestDefinition;
@@ -58,13 +59,21 @@ impl TestFileContents {
 pub async fn collect_items(root: impl AsRef<Path>) -> eyre::Result<TestFileContents> {
     let root = root.as_ref();
     let test_files = find_test_files(root).await.wrap_err("finding test files")?;
-    let mut out = TestFileContents::default();
+
+    let mut set = JoinSet::new();
     for test_file in test_files {
-        let items = extract_items_from_test_file(&test_file)
-            .await
-            .wrap_err_with(|| format!("extracting tests from {}", test_file.display()))?;
-        out.extend(items);
+        set.spawn(extract_items_from_test_file(test_file));
     }
+
+    let mut out = TestFileContents::default();
+    while let Some(items) = set.join_next().await {
+        let res = items.unwrap();
+        match res {
+            Ok(items) => out.extend(items),
+            Err(_) => todo!(),
+        }
+    }
+
     Ok(out)
 }
 
