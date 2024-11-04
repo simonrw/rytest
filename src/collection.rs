@@ -348,8 +348,13 @@ mod tests {
         TestDefinition,
     };
 
+    fn init_logging() {
+        let _ = tracing_subscriber::fmt::try_init();
+    }
+
     #[tokio::test]
     async fn simple() -> eyre::Result<()> {
+        init_logging();
         let test_dir = tempfile::tempdir().wrap_err("creating temporary directory")?;
         let file_contents = r#"
 def test_simple():
@@ -379,6 +384,7 @@ def test_simple():
 
     #[tokio::test]
     async fn class_method() -> eyre::Result<()> {
+        init_logging();
         let test_dir = tempfile::tempdir().wrap_err("creating temporary directory")?;
         let file_contents = r#"
 class TestClass:
@@ -410,6 +416,7 @@ class TestClass:
 
     #[tokio::test]
     async fn fixture() -> eyre::Result<()> {
+        init_logging();
         let test_dir = tempfile::tempdir().wrap_err("creating temporary directory")?;
         let file_contents = r#"
 import pytest
