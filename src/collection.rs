@@ -262,15 +262,13 @@ impl Visitor {
     fn extract_fixtures(&self, node: Node) -> Vec<String> {
         let mut out = Vec::new();
         let mut cursor = node.walk();
-        for child in node.children(&mut cursor) {
-            if child.kind() == "parameters" {
-                let mut cursor = node.walk();
-                for param_node in child.children(&mut cursor) {
-                    if param_node.kind() == "identifier" {
-                        let param_name = param_node.utf8_text(&self.bytes).unwrap();
-                        if param_name != "self" {
-                            out.push(param_name.to_string());
-                        }
+        for child in node.children_by_field_name("parameters", &mut cursor) {
+            let mut cursor = node.walk();
+            for param_node in child.children(&mut cursor) {
+                if param_node.kind() == "identifier" {
+                    let param_name = param_node.utf8_text(&self.bytes).unwrap();
+                    if param_name != "self" {
+                        out.push(param_name.to_string());
                     }
                 }
             }
